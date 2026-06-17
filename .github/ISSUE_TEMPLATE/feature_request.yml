@@ -1,0 +1,23 @@
+name: Feature Request
+description: Propose a new convention or API improvement
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: Before requesting, check that the convention is not already covered.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What feature do you want and why?
+    validations:
+      required: true
+
+  - type: textarea
+    id: formula
+    attributes:
+      label: Formula and ISDA reference
+      description: Provide the formula and the ISDA 2006 section number if applicable.
+    validations:
+      required: false
