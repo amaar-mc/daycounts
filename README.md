@@ -1,5 +1,9 @@
 # daycounts
 
+<p align="center">
+  <img src="assets/logo.png" alt="daycounts logo" width="160">
+</p>
+
 **Financial day-count conventions in pure Python with zero dependencies.**
 
 Implements five ISDA-defined conventions, a `year_fraction` dispatcher, and an `accrued_interest` helper.  Requires only the Python standard library (`datetime`).
