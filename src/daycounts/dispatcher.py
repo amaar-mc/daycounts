@@ -14,7 +14,9 @@ import enum
 from daycounts.conventions import (
     actual_360,
     actual_365_fixed,
+    actual_365l,
     actual_actual_isda,
+    nl_365,
     thirty_360_us,
     thirty_e_360,
 )
@@ -39,6 +41,8 @@ class Convention(str, enum.Enum):
     ACTUAL_ACTUAL_ISDA = "actual/actual isda"
     THIRTY_360_US = "30/360 us"
     THIRTY_E_360 = "30e/360"
+    NL_365 = "nl/365"
+    ACTUAL_365L = "actual/365l"
 
 
 _DISPATCH: dict[Convention, object] = {
@@ -47,6 +51,8 @@ _DISPATCH: dict[Convention, object] = {
     Convention.ACTUAL_ACTUAL_ISDA: actual_actual_isda,
     Convention.THIRTY_360_US: thirty_360_us,
     Convention.THIRTY_E_360: thirty_e_360,
+    Convention.NL_365: nl_365,
+    Convention.ACTUAL_365L: actual_365l,
 }
 
 
@@ -67,6 +73,8 @@ def year_fraction(d1: datetime.date, d2: datetime.date, convention: Convention |
           - ``'actual/actual isda'``
           - ``'30/360 us'``
           - ``'30e/360'``
+          - ``'nl/365'``
+          - ``'actual/365l'``
 
     Returns
     -------

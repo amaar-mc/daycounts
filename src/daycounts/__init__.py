@@ -10,6 +10,8 @@ Conventions
 - actual_actual_isda: Actual/Actual ISDA
 - thirty_360_us: 30/360 US Bond Basis
 - thirty_e_360: 30E/360 Eurobond
+- nl_365: NL/365 (Actual/365 No-Leap)
+- actual_365l: Actual/365L (ISMA-Year)
 
 Dispatcher
 ----------
@@ -27,7 +29,9 @@ from daycounts.accrued import accrued_interest
 from daycounts.conventions import (
     actual_360,
     actual_365_fixed,
+    actual_365l,
     actual_actual_isda,
+    nl_365,
     thirty_360_us,
     thirty_e_360,
 )
@@ -38,10 +42,12 @@ __all__ = [
     "accrued_interest",
     "actual_360",
     "actual_365_fixed",
+    "actual_365l",
     "actual_actual_isda",
+    "nl_365",
     "thirty_360_us",
     "thirty_e_360",
     "year_fraction",
 ]
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

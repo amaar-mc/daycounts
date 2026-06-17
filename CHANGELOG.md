@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-06-17
+
+### Added
+
+- `nl_365(d1, d2)`: NL/365 (Actual/365 No-Leap) -- actual days minus Feb 29 occurrences
+  in [d1, d2), divided by 365.  Used in some UK gilt and money-market contexts.
+  `Convention.NL_365` / `"nl/365"`.
+- `actual_365l(d1, d2)`: Actual/365L (ISMA-Year) -- actual days divided by 366 if d2's
+  year is a leap year or the period contains a Feb 29, otherwise 365.  Per ISMA Rule Book
+  (2001).  `Convention.ACTUAL_365L` / `"actual/365l"`.
+- Internal helper `_count_feb29_in_range(d1, d2)` counts Feb 29 occurrences in [d1, d2)
+  across arbitrarily long multi-year ranges.
+- Hypothesis property tests for both new conventions (non-negative, monotonic in d2,
+  NL/365 <= Actual/365 Fixed).
+- `hypothesis>=6` added to the `dev` optional-dependency group.
+
+### Notes
+
+PyPI publish for v0.2.0 is queued behind the new-project upload quota (rate-limited at
+429).  Install from GitHub in the meantime:
+
+```bash
+pip install git+https://github.com/amaar-mc/daycounts.git@v0.2.0
+```
+
+[0.2.0]: https://github.com/amaar-mc/daycounts/releases/tag/v0.2.0
+
 ## [0.1.0] - 2026-06-17
 
 ### Added

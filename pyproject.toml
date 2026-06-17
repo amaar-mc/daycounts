@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "daycounts"
-version = "0.1.0"
+version = "0.2.0"
 description = "Financial day-count conventions in pure Python with zero dependencies: Actual/360, Actual/365F, Actual/Actual ISDA, 30/360 US Bond Basis, 30E/360 Eurobond, year fraction, and accrued interest."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -41,7 +41,7 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest>=7", "ruff>=0.4", "mypy>=1.8", "twine>=5"]
+dev = ["pytest>=7", "ruff>=0.4", "mypy>=1.8", "twine>=5", "hypothesis>=6"]
 
 [project.urls]
 Homepage = "https://github.com/amaar-mc/daycounts"

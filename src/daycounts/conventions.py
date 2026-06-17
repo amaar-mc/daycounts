@@ -8,6 +8,7 @@ convention defined in ISDA 2006 Definitions, Section 4.16.
 References
 ----------
 ISDA 2006 Definitions, Section 4.16 (Day Count Fractions).
+ISMA Rule Book (2001) for Actual/365L (ISMA-Year).
 """
 
 from __future__ import annotations
@@ -231,3 +232,137 @@ def thirty_e_360(d1: datetime.date, d2: datetime.date) -> float:
 
     numerator = (y2 - y1) * 360 + (m2 - m1) * 30 + (dd2 - dd1)
     return numerator / 360.0
+
+
+# ---------------------------------------------------------------------------
+# Helpers for leap-day counting
+# ---------------------------------------------------------------------------
+
+
+def _count_feb29_in_range(d1: datetime.date, d2: datetime.date) -> int:
+    """Return the count of February 29 occurrences in the half-open interval [d1, d2).
+
+    Only dates where calendar.isleap(year) and year has a Feb 29 that lies
+    within [d1, d2) are counted.  Handles multi-year ranges correctly.
+
+    Parameters
+    ----------
+    d1:
+        Interval start (inclusive).
+    d2:
+        Interval end (exclusive).
+    """
+    count = 0
+    for year in range(d1.year, d2.year + 1):
+        if not calendar.isleap(year):
+            continue
+        feb29 = datetime.date(year, 2, 29)
+        if d1 <= feb29 < d2:
+            count += 1
+    return count
+
+
+# ---------------------------------------------------------------------------
+# NL/365 (Actual/365 No-Leap)
+# ---------------------------------------------------------------------------
+
+
+def nl_365(d1: datetime.date, d2: datetime.date) -> float:
+    """Return the NL/365 (Actual/365 No-Leap) year fraction.
+
+    Also known as Actual/365 No-Leap.
+
+    Numerator = actual days between d1 and d2 minus the number of February 29
+    occurrences in the half-open interval [d1, d2).
+    Denominator = 365.
+
+    Year fraction = (actual_days - leap_days) / 365
+
+    Worked example:
+        d1 = 2020-02-28, d2 = 2020-03-01
+        actual days = 2; Feb 29 2020 lies in [d1, d2) -> leap_days = 1
+        year fraction = (2 - 1) / 365 = 1/365
+
+    Parameters
+    ----------
+    d1:
+        Start date (inclusive).
+    d2:
+        End date (exclusive).
+
+    Raises
+    ------
+    ValueError
+        If d2 < d1.
+
+    Notes
+    -----
+    For periods that contain no Feb 29, NL/365 agrees with Actual/365 Fixed.
+    NL/365 is used in some UK gilt and money-market contexts where leap-day
+    inflation is undesirable.
+    """
+    _validate(d1, d2)
+    actual_days = (d2 - d1).days
+    leap_days = _count_feb29_in_range(d1, d2)
+    return (actual_days - leap_days) / 365.0
+
+
+# ---------------------------------------------------------------------------
+# Actual/365L (Actual/365 Leap-year, ISMA-Year)
+# ---------------------------------------------------------------------------
+
+
+def actual_365l(d1: datetime.date, d2: datetime.date) -> float:
+    """Return the Actual/365L (Actual/365 Leap-year, ISMA-Year) year fraction.
+
+    Also known as ISMA-Year.
+
+    Numerator = actual days between d1 and d2.
+    Denominator = 366 if either:
+        (a) the period [d1, d2) contains a February 29, or
+        (b) d2's year is a leap year;
+    otherwise 365.
+
+    Precisely: denom = 366 if (calendar.isleap(d2.year) or
+    _count_feb29_in_range(d1, d2) > 0) else 365.
+
+    Year fraction = actual_days / denom
+
+    Worked examples:
+        Non-leap: d1 = 2023-01-01, d2 = 2023-07-01 (181 days, non-leap end)
+            -> denom = 365, fraction = 181/365
+        Leap-containing: d1 = 2020-01-01, d2 = 2020-07-01 (182 days, leap year
+            2020 contains Feb 29)
+            -> denom = 366, fraction = 182/366
+        Leap end-year: d1 = 2023-07-01, d2 = 2024-01-01 (184 days, d2 in leap
+            year 2024)
+            -> denom = 366, fraction = 184/366
+
+    Parameters
+    ----------
+    d1:
+        Start date (inclusive).
+    d2:
+        End date (exclusive).
+
+    Raises
+    ------
+    ValueError
+        If d2 < d1.
+
+    Notes
+    -----
+    Rule per ISMA Rule Book (2001) and widespread market practice: use 366
+    whenever Feb 29 falls in the coupon period or the coupon period ends in a
+    leap year; otherwise use 365.  This ensures the denominator reflects the
+    actual length of the year containing the accrual end.
+
+    Reference: ISMA (International Securities Market Association) Rule Book,
+    Appendix A (2001); also documented in OpenGamma Strata as
+    DayCounts.ACT_365L.
+    """
+    _validate(d1, d2)
+    actual_days = (d2 - d1).days
+    contains_feb29 = _count_feb29_in_range(d1, d2) > 0
+    denom = 366 if (calendar.isleap(d2.year) or contains_feb29) else 365
+    return actual_days / denom
